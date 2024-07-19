@@ -1,48 +1,47 @@
-// Defining text characters for the empty and full hearts for you to use later.
-const EMPTY_HEART = "♡";
-const FULL_HEART = "♥";
+// Defining text characters for the empty and full hearts
+const EMPTY_HEART = '♡';
+const FULL_HEART = '♥';
 
-// Your JavaScript code goes here!
+document.addEventListener('DOMContentLoaded', () => {
+  const hearts = document.querySelectorAll('.like-glyph');
 
-const likeBtn = document.querySelectorAll(".like-glyph");
-likeBtn.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    if (btn.innerText === EMPTY_HEART) {
-      mimicServerCall()
-        .then(() => {
-          btn.innerText = FULL_HEART;
-          btn.classList.add("activated-heart");
-        })
-        .catch((error) => {
-          displayErrorModal(error);
-        });
-    } else {
-      btn.innerText = EMPTY_HEART;
-      btn.classList.remove("activated-heart");
-    }
+  function toggleHeart(event) {
+    const heart = event.target;
+
+    mimicServerCall()
+      .then(() => {
+        if (heart.innerText === EMPTY_HEART) {
+          heart.innerText = FULL_HEART;
+          heart.classList.add('activated-heart');
+        } else {
+          heart.innerText = EMPTY_HEART;
+          heart.classList.remove('activated-heart');
+        }
+      })
+      .catch((error) => {
+        const errorModal = document.getElementById('modal');
+        errorModal.innerText = error;
+        errorModal.classList.remove('hidden');
+        setTimeout(() => {
+          errorModal.classList.add('hidden');
+        }, 3000);
+      });
+  }
+
+  // Adding click event listeners to each heart
+  hearts.forEach((heart) => {
+    heart.addEventListener('click', toggleHeart);
   });
 });
-
-function displayErrorModal(errorMessage) {
-  const errorModal = document.getElementById("modal");
-  const modalMessage = document.getElementById("modal-message"); // Corrected typo
-  modalMessage.innerText = errorMessage;
-  errorModal.classList.remove("hidden");
-
-  // Hide the error modal after 3 seconds
-  setTimeout(() => {
-    errorModal.classList.add("hidden");
-  }, 3000);
-}
 
 //------------------------------------------------------------------------------
 // Don't change the code below: this function mocks the server response
 //------------------------------------------------------------------------------
 
-function mimicServerCall(url = "http://mimicServer.example.com", config = {}) {
-  return new Promise(function (resolve, reject) {
-    setTimeout(function () {
-      let isRandomFailure = Math.random() < 0.2;
+function mimicServerCall(url="http://mimicServer.example.com", config={}) {
+  return new Promise(function(resolve, reject) {
+    setTimeout(function() {
+      let isRandomFailure = Math.random() < .2;
       if (isRandomFailure) {
         reject("Random server error. Try again.");
       } else {
